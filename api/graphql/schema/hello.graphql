@@ -1,0 +1,19 @@
+type Query {
+  # GetHelloString: HelloStringResponse
+  GetHelloString: String!
+  GetHelloJson: HelloJsonResponse!
+}
+
+# type HelloStringResponse {
+#   # Define fields specific to HelloStringResponse if any
+# }
+
+type HelloJsonResponse {
+  data: Data!
+}
+
+type Data {
+  message: String
+}
+
+# scalar JSON

@@ -1,0 +1,106 @@
+type Query {
+  listUsers(token: String!): [User]!
+  getUser(UUID: String!, token: String!): User
+  getUserByID(ID: String!, token: String!): User
+  getUserByName(name: String!, token: String!): User
+  getUserByEmail(email: String!, token: String!): User
+}
+
+type Mutation {
+  createUser(userDTO: UserInput!, token: String!): User
+  updateUser(UUID: String!, userDTO: UserInput!, token: String!): User
+  deleteUser(UUID: String!, token: String!): User
+}
+
+type User {
+  ID: String!
+  UUID: String!
+  metadata: UserMetadata!
+  content: UserContent!
+}
+
+type UserMetadata {
+  name: String!
+  dates: CommonDate!
+}
+
+type UserContent {
+  email: String!
+  phone: String!
+  firstName: String!
+  lastName: String!
+  projectRoles: [PROJECT_ROLE_TYPES!]!
+  scrumRoles: [SCRUM_ROLE_TYPES!]!
+  password: String!
+}
+
+input UserInput {
+  ID: String
+  UUID: String
+  metadata: UserMetadataInput!
+  content: UserContentInput!
+}
+
+input UserMetadataInput {
+  name: String!
+  dates: CommonDateInput!
+}
+
+input UserContentInput {
+  email: String!
+  phone: String!
+  firstName: String!
+  lastName: String!
+  projectRoles: [PROJECT_ROLE_TYPES!]!
+  scrumRoles: [SCRUM_ROLE_TYPES!]!
+  password: String!
+}
+
+type CommonDate {
+  createdAt: Date!
+  createdBy: String!
+  updatedAt: Date!
+  updatedBy: String!
+  startedAt: Date
+  startedBy: String
+  startDate: Date
+  endDate: Date
+  completedAt: Date
+  completedBy: String
+}
+
+input CommonDateInput {
+  createdAt: Date!
+  createdBy: String!
+  updatedAt: Date!
+  updatedBy: String!
+  startedAt: Date
+  startedBy: String
+  startDate: Date
+  endDate: Date
+  completedAt: Date
+  completedBy: String
+}
+
+enum PROJECT_ROLE_TYPES {
+  PROJECT_ROLE_TYPES_UNSPECIFIED
+  PROJECT_ROLE_TYPES_PM
+  PROJECT_ROLE_TYPES_EM
+  PROJECT_ROLE_TYPES_DEV
+  PROJECT_ROLE_TYPES_QA
+  PROJECT_ROLE_TYPES_BA
+  PROJECT_ROLE_TYPES_UX
+  PROJECT_ROLE_TYPES_O
+  UNRECOGNIZED
+}
+
+enum SCRUM_ROLE_TYPES {
+  SCRUM_ROLE_TYPES_UNSPECIFIED
+  SCRUM_ROLE_TYPES_PO
+  SCRUM_ROLE_TYPES_SM
+  SCRUM_ROLE_TYPES_MEMBER
+  SCRUM_ROLE_TYPES_O
+  UNRECOGNIZED
+}
+
+scalar Date

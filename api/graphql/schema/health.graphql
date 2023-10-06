@@ -1,0 +1,22 @@
+type Query {
+  HealthCheck(request: HealthRequestInput!): HealthResponse!
+}
+
+enum ServingStatus {
+  UNKNOWN
+  SERVING
+  NOT_SERVING
+}
+
+input HealthRequestInput {
+  service: String!
+}
+
+type HealthResponse {
+  service: String!
+  status: ServingStatus!
+  message: String
+}
+
+# Scalar type for JSON data if needed
+scalar JSON

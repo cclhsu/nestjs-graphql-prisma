@@ -1,0 +1,124 @@
+@startuml
+
+allowmixing
+
+package "Microservice Architecture" {
+    package "GraphQL Microservice" {
+        package "Resolver" {
+            class HealthResolver {
+                - healthService: HealthService
+                + <<Query>> isHealthy(healthRequestDTO: HealthRequestDTO!): HealthResponseDTO!
+                + <<Query>> isLive(healthRequestDTO: HealthRequestDTO!): HealthResponseDTO
+                + <<Query>> isReady(healthRequestDTO: HealthRequestDTO): HealthResponseDTO
+            }
+
+            class HealthRequestDTO {
+                - service: string
+            }
+
+            enum ServingStatus {
+                UNKNOWN
+                SERVING
+                NOT_SERVING
+            }
+
+            class HealthResponseDTO {
+                - service: string
+                - status: ServingStatus
+                - message: string
+            }
+
+            HealthResolver -down[hidden]- HealthRequestDTO
+            HealthResolver -down[hidden]- HealthResponseDTO
+            HealthRequestDTO -up[hidden]- HealthResolver
+            HealthResponseDTO -up[hidden]- HealthResolver
+            ServingStatus -up[hidden]- HealthResponseDTO
+            HealthResponseDTO -down[hidden]- ServingStatus
+        }
+
+        package "Middleware" {
+            class AuthMiddleware {
+                + authenticateRequest(request: HttpRequest): bool
+                + validateToken(token: string): bool
+                + extractHealthFromToken(token: string): Health
+            }
+        }
+
+        package "Service" {
+            class HealthService {
+                - healthCache: HealthCache
+                - healthRepository: HealthRepository
+                + isHealthy(healthRequestDTO: HealthRequestDTO): HealthResponseDTO
+                + isLive(healthRequestDTO: HealthRequestDTO): HealthResponseDTO
+                + isReady(healthRequestDTO: HealthRequestDTO): HealthResponseDTO
+            }
+        }
+
+        package "Cache" {
+            class HealthCache {
+                + isHealthy(healthRequestDTO: HealthRequestDTO): HealthResponseDTO
+                + isLive(healthRequestDTO: HealthRequestDTO): HealthResponseDTO
+                + isReady(healthRequestDTO: HealthRequestDTO): HealthResponseDTO
+            }
+        }
+
+        package "Repository" {
+            class HealthRepository {
+                + isHealthy(healthRequestDTO: HealthRequestDTO): HealthResponseDTO
+                + isLive(healthRequestDTO: HealthRequestDTO): HealthResponseDTO
+                + isReady(healthRequestDTO: HealthRequestDTO): HealthResponseDTO
+            }
+
+            ' !define TABLE_COLUMNS(COLUMN_LIST)
+            ' class Health {
+            '     + UUID: ID [PK]
+            '     + CreateTimestamp: DateTime
+            '     + UpdateTimestamp: DateTime
+            ' }
+        }
+
+        ' Resolver -down[hidden]- Service
+        ' Resolver -down[hidden]- Middleware
+        ' Service -up[hidden]- Resolver
+        ' Middleware -up[hidden]- Resolver
+
+        HealthResolver -down-> HealthService
+        HealthResolver -down-> AuthMiddleware
+        AuthMiddleware -up-> HealthResolver
+        HealthService --> HealthRepository
+        HealthService --> HealthCache
+    }
+
+    HealthService -down-> OtherMicroservice1
+
+    package "Other Microservice 1" as OtherMicroservice1 {
+        ' // Other Microservice 1 components
+    }
+
+    queue MessageQueue <<Queue>>
+    MessageQueue .up.> HealthService : <<Consumer>>
+
+    package "Log Aggregation" {
+        class LogAggregator {
+            - log: Log
+            - auditLog: AuditLog
+        }
+
+        ' class AuditLog {
+        '     + message: String
+        '     + timestamp: DateTime
+        ' }
+
+        ' class Log {
+        '     + message: String
+        '     + timestamp: DateTime
+        ' }
+    }
+
+    HealthResolver --> LogAggregator : <<Sends Audit Log>>
+    HealthCache --> LogAggregator : <<Sends Audit Log>>
+    HealthRepository --> LogAggregator : <<Sends Audit Log>>
+    HealthService --> LogAggregator : <<Sends Log>>
+}
+
+@enduml

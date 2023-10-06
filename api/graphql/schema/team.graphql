@@ -1,0 +1,89 @@
+type Query {
+  listTeams(token: String!): [Team]!
+  getTeam(UUID: String!, token: String!): Team
+  getTeamByID(ID: String!, token: String!): Team
+  getTeamByName(name: String!, token: String!): Team
+  getTeamByEmail(email: String!, token: String!): Team
+}
+
+type Mutation {
+  createTeam(teamDTO: TeamInput!, token: String!): Team
+  updateTeam(UUID: String!, teamDTO: TeamInput!, token: String!): Team
+  deleteTeam(UUID: String!, token: String!): Team
+}
+
+type IdUuidDTO {
+  ID: String!
+  UUID: String!
+}
+
+type Team {
+  ID: String!
+  UUID: String!
+  metadata: TeamMetadata!
+  content: TeamContent!
+}
+
+type TeamMetadata {
+  name: String!
+  dates: CommonDate!
+}
+
+type TeamContent {
+  email: String!
+  members: [IdUuidDTO]!
+  productOwner: IdUuidDTO!
+  scrumMaster: IdUuidDTO!
+}
+
+input TeamInput {
+  ID: String
+  UUID: String
+  metadata: TeamMetadataInput!
+  content: TeamContentInput!
+}
+
+input TeamMetadataInput {
+  name: String!
+  dates: CommonDateInput!
+}
+
+input TeamContentInput {
+  email: String!
+  members: [IdUuidDTOInput]!
+  productOwner: IdUuidDTOInput!
+  scrumMaster: IdUuidDTOInput!
+}
+
+input IdUuidDTOInput {
+  ID: String!
+  UUID: String!
+}
+
+type CommonDate {
+  createdAt: Date!
+  createdBy: String!
+  updatedAt: Date!
+  updatedBy: String!
+  startedAt: Date
+  startedBy: String
+  startDate: Date
+  endDate: Date
+  completedAt: Date
+  completedBy: String
+}
+
+input CommonDateInput {
+  createdAt: Date!
+  createdBy: String!
+  updatedAt: Date!
+  updatedBy: String!
+  startedAt: Date
+  startedBy: String
+  startDate: Date
+  endDate: Date
+  completedAt: Date
+  completedBy: String
+}
+
+scalar Date

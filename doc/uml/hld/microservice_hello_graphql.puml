@@ -1,0 +1,66 @@
+@startuml
+
+allowmixing
+
+package "Microservice Architecture" {
+    package "GraphQL Microservice" {
+        package "Controller" {
+            class HelloController {
+                - helloService: HelloService
+                + <<Query>> GetHelloString: String!
+                + <<Query>> GetHelloJson: HelloJsonResponse!
+            }
+        }
+
+        package "Middleware" {
+            class AuthMiddleware {
+                + authenticateRequest(request: HttpRequest): bool
+                + validateToken(token: string): bool
+                + extractHelloFromToken(token: string): Hello
+            }
+        }
+
+        package "Service" {
+            class HelloService {
+                + getHelloString(uuid: ID): HelloStringResponseDTO
+                + getHelloJson(uuid: ID): HelloJsonResponseDTO
+            }
+        }
+
+        HelloController --> HelloService
+        HelloController --> AuthMiddleware
+        AuthMiddleware --> HelloController
+
+        ' class HelloStringResponseDTO
+
+        ' class DataDTO {
+        '     - message: string
+        ' }
+
+        ' class HelloJsonResponseDTO {
+        '     - data: DataDTO
+        ' }
+    }
+
+    package "Log Aggregation" {
+        class LogAggregator {
+            - log: Log
+            - auditLog: AuditLog
+        }
+
+        ' class AuditLog {
+        '     + message: String
+        '     + timestamp: DateTime
+        ' }
+
+        ' class Log {
+        '     + message: String
+        '     + timestamp: DateTime
+        ' }
+    }
+
+    HelloResolver --> LogAggregator : <<Sends Audit Log>>
+    HelloService --> LogAggregator : <<Sends Log>>
+}
+
+@enduml

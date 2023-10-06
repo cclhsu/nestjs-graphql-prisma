@@ -1,0 +1,131 @@
+@startuml
+
+class Mutation {
+    + Login(input: LoginInput!): LoginResponse!
+    + Logout(input: SecuredInput!): LogoutResponse!
+}
+
+class Query {
+    + GetProtectedData(input: SecuredInput!): SecuredResponse!
+    + GetProfile(input: SecuredInput!): GetUserProfileResponse!
+    + health(service: string!): HealthResponse!
+    + isHealthy(service: string!): HealthResponse!
+    + GetHelloString: String!
+    + GetHelloJson: HelloJsonResponse!
+    + getUser(UUID: ID!): UserResponse!
+    + getUserByUsername(username: String!): UserResponse!
+    + getUserByEmail(email: String!): UserResponse!
+    + listUsers: ListUsersResponse!
+}
+
+class LoginInput {
+    - username: String!
+    - password: String!
+}
+
+class LoginResponse {
+    - token: string!
+}
+
+class SecuredInput {
+    - token: string!
+}
+
+class SecuredResponse {
+    - success: Boolean!
+    - message: String
+    - errorCode: Int
+}
+
+class GetUserProfileResponse {
+    - UUID: ID!
+    - lastName: String!
+    - firstName: String!
+    - role: String!
+    - dateOfBirth: String
+    - email: String!
+    - phoneNumber: String
+    - username: String!
+}
+
+class LogoutResponse {
+    - message: String!
+    - user: String!
+}
+
+enum ServingStatus {
+    UNKNOWN
+    SERVING
+    NOT_SERVING
+}
+
+class HealthResponse {
+    - status: ServingStatus
+}
+
+class Data {
+    - message: String
+}
+
+class HelloJsonResponse {
+    - data: Data!
+}
+
+class UserResponse {
+    - UUID: ID!
+    - lastName: String!
+    - firstName: String!
+    - role: String!
+    - dateOfBirth: String
+    - email: String!
+    - phoneNumber: String
+    - username: String!
+    - createTimestamp: String!
+    - updateTimestamp: String!
+}
+
+class ListUsersResponse {
+    - users: [UserResponse]!
+}
+
+class CreateUserRequest {
+    - UUID: ID!
+    - lastName: String!
+    - firstName: String!
+    - role: String!
+    - dateOfBirth: String
+    - email: String!
+    - phoneNumber: String
+    - username: String!
+    - password: String!
+}
+
+class UpdateUserRequest {
+    - lastName: String!
+    - firstName: String!
+    - role: String!
+    - dateOfBirth: String
+    - email: String!
+    - phoneNumber: String
+    - username: String!
+    - password: String!
+}
+
+Mutation --> LoginInput
+Mutation --> LoginResponse
+Mutation --> SecuredInput
+Mutation --> LogoutResponse
+
+Query --> SecuredInput
+Query --> SecuredResponse
+Query --> GetUserProfileResponse
+Query --> HealthResponse
+Query --> HelloJsonResponse
+Query --> UserResponse
+Query --> ListUsersResponse
+
+SecuredResponse --> ServingStatus
+
+HelloJsonResponse --> Data
+
+@enduml
